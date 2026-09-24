@@ -2,10 +2,27 @@ const express = require('express');
 const morgan = require('morgan'); 
 const cors = require('cors');     
 const path = require('path');
+const fs = require('fs');
+const multer = require('multer');
 const Router = require('./routes/Router');
 
 const app = express();
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
 
+// archivos
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'uploads/');
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+    cb(null, uniqueSuffix + path.extname(file.originalname));
+  }
+});
+
+const upload = multer({ storage });
+
+// Vista
 app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'Vistas'));
 
@@ -18,11 +35,30 @@ app.use((req, res, next) => {
   next(); 
 });
 
+// Ruta para recibir archivos
+app.post('/subir-archivo', upload.single('archivo'), (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ error: 'No se envió ningún archivo' });
+  }
+
+  res.json({
+    mensaje: 'Archivo recibido con éxito',
+    archivo: {
+      nombreOriginal: req.file.originalname,
+      nombreGuardado: req.file.filename,
+      tamanoBytes: req.file.size,
+      mimetype: req.file.mimetype
+    }
+  });
+});
+
+// Uso vista
 app.get('/ruta', (req, res, next) => {
   let opciones = {
     titulo: "Monster Hunter",
-    subtitulo: "Monstruopedia"
-  };
+    subtitulo: "Monstruopedia",
+    subsubtitulo: "Hola3"
+  }; 
   res.render('plantilla', opciones);
 });
 
