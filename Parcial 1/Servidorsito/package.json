@@ -10,6 +10,12 @@
   "license": "ISC",
   "keywords": [],
   "dependencies": {
-    "express": "^5.2.1"
+    "express": "^5.2.1",
+    "halson": "^3.2.0",
+    "multer": "^2.4.0",
+    "pug": "^3.0.4"
+  },
+  "devDependencies": {
+    "@types/multer": "^2.2.0"
   }
 }

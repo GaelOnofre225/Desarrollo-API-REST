@@ -1,4 +1,5 @@
 const express = require('express');
+const halson = require('halson'); // Importar halson para la tarea de HATEOAS
 const router = express.Router();
 
 router.get('/', async (req, res, next) => {
@@ -31,7 +32,14 @@ router.get('/:id', async (req, res, next) => {
     }
 
     const monstruo = await respuesta.json();
-    res.json(monstruo);
+    
+    // --- TAREA: RESPUESTA HATEOAS ---
+    const recursoHateoas = halson(monstruo)
+      .addLink('self', `/monstruos/${id}`)                               
+      .addLink('actualizar', { href: `/monstruos/${id}`, method: 'PUT' }) 
+      .addLink('coleccion', `/monstruos`);                               
+
+    res.json(recursoHateoas);
   } catch (error) {
     next(error);
   }
